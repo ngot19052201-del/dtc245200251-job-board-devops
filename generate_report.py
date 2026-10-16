@@ -327,7 +327,28 @@ def generate_report():
     bullet_item("Giám sát Metrics (Prometheus + Grafana): ", "Prometheus định kỳ cào dữ liệu (scrape metrics) từ các container, sau đó Grafana trực quan hóa thành các dashboard quản trị chuyên nghiệp.")
     bullet_item("Quản lý Log tập trung (Loki + Promtail): ", "Promtail tự động đọc log từ các container và đẩy về Loki server, cho phép kỹ trị tra cứu log bằng ngôn ngữ LogQL.")
 
-    add_image_placeholder(doc, "Sơ đồ kiến trúc tổng thể hệ thống Job Board DevOps với 3 dải mạng phân tách độc lập")
+    # Embed Real Diagram Image
+    img_arch_path = os.path.join(os.path.dirname(__file__), "screenshots", "system_architecture.png")
+    if os.path.exists(img_arch_path):
+        p_img = doc.add_paragraph()
+        p_img.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_img.paragraph_format.space_before = Pt(8)
+        p_img.paragraph_format.space_after = Pt(2)
+        r_img = p_img.add_run()
+        r_img.add_picture(img_arch_path, width=Inches(6.2))
+        
+        cp = doc.add_paragraph()
+        cp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        cp.paragraph_format.space_before = Pt(2)
+        cp.paragraph_format.space_after = Pt(8)
+        cr = cp.add_run("Hình 1.1: Sơ đồ kiến trúc tổng thể hệ thống Job Board DevOps với 3 dải mạng phân tách")
+        cr.font.name = "Times New Roman"
+        cr.font.italic = True
+        cr.font.bold = True
+        cr.font.size = Pt(10.5)
+        cr.font.color.rgb = RGBColor(30, 41, 59)
+    else:
+        add_image_placeholder(doc, "Sơ đồ kiến trúc tổng thể hệ thống Job Board DevOps với 3 dải mạng phân tách độc lập")
 
     body_text("Bảng phân loại chi tiết 11 dịch vụ container đang vận hành trong hệ thống:")
     sv_data = [
