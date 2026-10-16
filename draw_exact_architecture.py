@@ -297,11 +297,11 @@ def generate_uml_diagram(output_path):
     draw_arrow(draw, (490, pt_y1), (540, lk_y2), color='#222222', width=3, arrow_size=16)
     draw.text((550, 1370), "đẩy log", fill='#000000', font=font_label)
 
-    # 10. Exporters -> Prometheus (thu metrics)
-    p_ex_start = (940, ex_y1)
+    # 10. Prometheus -> Exporters (thu metrics - Pull model, mũi tên hướng xuống Exporters)
+    p_pr_start = (960, pr_y2)
     p_control = (870, 1370)
-    p_pr_end = (960, pr_y2)
-    draw_curved_arrow(draw, p_ex_start, p_control, p_pr_end, color='#222222', width=3, arrow_size=16)
+    p_ex_end = (940, ex_y1)
+    draw_curved_arrow(draw, p_pr_start, p_control, p_ex_end, color='#222222', width=3, arrow_size=16)
     draw.text((860, 1375), "thu metrics", fill='#000000', font=font_label, anchor='ra')
 
     # 11. Bottom Figure Caption
@@ -407,8 +407,8 @@ def generate_svg_diagram(svg_path):
   <line x1="245" y1="760" x2="270" y2="620" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
   <text x="275" y="685" font-size="14" fill="#000000">đẩy log</text>
 
-  <!-- Exporters -> Prometheus (thu metrics) -->
-  <path d="M 470 760 Q 435 685 480 620" fill="none" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <!-- Prometheus -> Exporters (thu metrics - Pull model hướng xuống Exporters) -->
+  <path d="M 480 620 Q 435 685 470 760" fill="none" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
   <text x="430" y="688" text-anchor="end" font-size="14" fill="#000000">thu metrics</text>
 
   <!-- Right Section: Reverse Proxy 3D Node -->
