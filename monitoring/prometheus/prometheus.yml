@@ -22,14 +22,13 @@ scrape_configs:
     static_configs:
       - targets: ['mysqld-exporter:9104']
 
-  # 4. Nginx Reverse Proxy (Stub Status via HTTP)
+  # 4. Nginx Reverse Proxy Metrics (nginx-prometheus-exporter)
   - job_name: 'nginx'
-    metrics_path: '/stub_status'
     static_configs:
-      - targets: ['nginx:80']
+      - targets: ['nginx-exporter:9113']
 
-  # 5. Node.js Web Application Health Metrics
+  # 5. Node.js Web Application Health & Business Metrics
   - job_name: 'webapp'
-    metrics_path: '/health'
+    metrics_path: '/metrics'
     static_configs:
       - targets: ['webapp:3000']

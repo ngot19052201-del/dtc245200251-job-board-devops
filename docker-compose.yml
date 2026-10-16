@@ -119,13 +119,30 @@ services:
     image: prom/mysqld-exporter:latest
     container_name: jobboard-mysqld-exporter
     restart: unless-stopped
-    environment:
-      DATA_SOURCE_NAME: "exporter:ExporterPass@2026@(mysql:3306)/"
+    command:
+      - "--config.my-cnf=/etc/.my.cnf"
+    volumes:
+      - ./monitoring/mysqld-exporter/.my.cnf:/etc/.my.cnf:ro
     networks:
       - monitoring-net
     depends_on:
       mysql:
         condition: service_healthy
+
+  # ============================================================================
+  # 6B. NGINX PROMETHEUS EXPORTER
+  # ============================================================================
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:latest
+    container_name: jobboard-nginx-exporter
+    restart: unless-stopped
+    command:
+      - "-nginx.scrape-uri=http://nginx:80/stub_status"
+    networks:
+      - monitoring-net
+      - frontend-net
+    depends_on:
+      - nginx
 
   # ============================================================================
   # 7. METRICS SCRAPER & TSDB (PROMETHEUS)

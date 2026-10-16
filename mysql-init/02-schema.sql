@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `jobs` (
   `benefits` LONGTEXT DEFAULT NULL,
   `salary_range` VARCHAR(100) NOT NULL,
   `location` VARCHAR(150) NOT NULL,
-  `job_type` ENUM('Toàn thời gian', 'Bán thời gian', 'Remote', 'Thực tập') NOT NULL DEFAULT 'Toàn thời gian',
+  `job_type` VARCHAR(50) NOT NULL DEFAULT 'Toàn thời gian',
   `status` ENUM('pending', 'approved', 'rejected', 'closed') NOT NULL DEFAULT 'approved',
   `deadline` DATE NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

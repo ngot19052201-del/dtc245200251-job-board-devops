@@ -73,6 +73,37 @@ app.get('/health', async (req, res) => {
   }
 });
 
+// Prometheus Metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    const jobs = await query("SELECT COUNT(*) as total FROM jobs");
+    const users = await query("SELECT COUNT(*) as total FROM users");
+    const apps = await query("SELECT COUNT(*) as total FROM applications");
+    const jobCount = (jobs && jobs[0]) ? jobs[0].total : 0;
+    const userCount = (users && users[0]) ? users[0].total : 0;
+    const appCount = (apps && apps[0]) ? apps[0].total : 0;
+
+    res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
+    res.send(`# HELP jobboard_up Status of Job Board web application
+# TYPE jobboard_up gauge
+jobboard_up 1
+# HELP jobboard_jobs_total Total job postings in system
+# TYPE jobboard_jobs_total gauge
+jobboard_jobs_total ${jobCount}
+# HELP jobboard_users_total Total registered users
+# TYPE jobboard_users_total gauge
+jobboard_users_total ${userCount}
+# HELP jobboard_applications_total Total submitted applications
+# TYPE jobboard_applications_total gauge
+jobboard_applications_total ${appCount}
+`);
+  } catch (err) {
+    console.error('Metrics calculation error:', err.message);
+    res.set('Content-Type', 'text/plain; version=0.0.4; charset=utf-8');
+    res.status(500).send('jobboard_up 0\n');
+  }
+});
+
 // Custom error trigger endpoint for testing Loki LogQL queries
 app.get('/trigger-error', (req, res) => {
   console.error('[webapp] ERROR: Exception triggered manually for testing Loki LogQL queries!');
