@@ -1,0 +1,229 @@
+services:
+  # ============================================================================
+  # 1. FRONTEND REVERSE PROXY (NGINX)
+  # ============================================================================
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: jobboard-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx-logs:/var/log/nginx
+    networks:
+      - frontend-net
+      - backend-net
+      - monitoring-net
+    depends_on:
+      webapp:
+        condition: service_healthy
+
+  # ============================================================================
+  # 2. APPLICATION WEB SERVICE (NODE.JS EXPRESS)
+  # ============================================================================
+  webapp:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: jobboard-webapp
+    restart: unless-stopped
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=jobboard_db
+      - DB_USER=jobuser
+      - DB_PASSWORD=JobPass@2026_Secure
+      - SESSION_SECRET=super_secret_session_key_jobboard_2026_dtc245200251
+    volumes:
+      - cv-uploads:/usr/src/app/public/uploads
+    networks:
+      - backend-net
+      - monitoring-net
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ============================================================================
+  # 3. DATABASE (MYSQL 8.0) - ISOLATED (NO HOST PORT EXPOSED)
+  # ============================================================================
+  mysql:
+    image: mysql:8.0
+    container_name: jobboard-mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: RootAdmin@2026_Secure_Strong
+      MYSQL_DATABASE: jobboard_db
+      MYSQL_USER: jobuser
+      MYSQL_PASSWORD: JobPass@2026_Secure
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - backend-net
+      - monitoring-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "jobuser", "-pJobPass@2026_Secure"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ============================================================================
+  # 4. DATABASE ADMINISTRATION (PHPMYADMIN)
+  # ============================================================================
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: jobboard-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 0
+    networks:
+      - backend-net
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ============================================================================
+  # 5. CONTAINER RESOURCE METRICS (CADVISOR)
+  # ============================================================================
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: jobboard-cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - monitoring-net
+
+  # ============================================================================
+  # 6. MYSQL EXPORTER FOR PROMETHEUS
+  # ============================================================================
+  mysqld-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: jobboard-mysqld-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "exporter:ExporterPass@2026@(mysql:3306)/"
+    networks:
+      - monitoring-net
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  # ============================================================================
+  # 7. METRICS SCRAPER & TSDB (PROMETHEUS)
+  # ============================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: jobboard-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    networks:
+      - monitoring-net
+    depends_on:
+      - cadvisor
+      - mysqld-exporter
+
+  # ============================================================================
+  # 8. VISUALIZATION DASHBOARD (GRAFANA)
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:latest
+    container_name: jobboard-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=Admin@2026
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana-data:/var/lib/grafana
+    networks:
+      - monitoring-net
+      - frontend-net
+    depends_on:
+      - prometheus
+      - loki
+
+  # ============================================================================
+  # 9. LOG AGGREGATION SERVER (LOKI)
+  # ============================================================================
+  loki:
+    image: grafana/loki:latest
+    container_name: jobboard-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki-data:/loki
+    networks:
+      - monitoring-net
+
+  # ============================================================================
+  # 10. LOG SHIPPER AGENT (PROMTAIL)
+  # ============================================================================
+  promtail:
+    image: grafana/promtail:latest
+    container_name: jobboard-promtail
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail-config.yml
+    volumes:
+      - ./monitoring/promtail/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
+      - nginx-logs:/var/log/nginx:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    networks:
+      - monitoring-net
+    depends_on:
+      - loki
+
+# ==============================================================================
+# THREE ISOLATED BRIDGE NETWORKS
+# ==============================================================================
+networks:
+  frontend-net:
+    driver: bridge
+    name: jobboard-frontend-net
+  backend-net:
+    driver: bridge
+    name: jobboard-backend-net
+  monitoring-net:
+    driver: bridge
+    name: jobboard-monitoring-net
+
+# ==============================================================================
+# PERSISTENT VOLUMES
+# ==============================================================================
+volumes:
+  mysql-data:
+  cv-uploads:
+  nginx-logs:
+  prometheus-data:
+  grafana-data:
+  loki-data:
