@@ -4,15 +4,12 @@ const jobController = {
   getHome: async (req, res) => {
     try {
       // 1. Statistics
-      const [[{ totalJobs }]] = await Promise.all([
-        query("SELECT COUNT(*) as totalJobs FROM jobs WHERE status = 'approved'")
-      ]);
-      const [[{ totalCompanies }]] = await Promise.all([
-        query("SELECT COUNT(*) as totalCompanies FROM companies")
-      ]);
-      const [[{ totalApplications }]] = await Promise.all([
-        query("SELECT COUNT(*) as totalApplications FROM applications")
-      ]);
+      const jRows = await query("SELECT COUNT(*) as total FROM jobs WHERE status = 'approved'");
+      const cRows = await query("SELECT COUNT(*) as total FROM companies");
+      const aRows = await query("SELECT COUNT(*) as total FROM applications");
+      const totalJobs = (jRows && jRows[0]) ? jRows[0].total : 0;
+      const totalCompanies = (cRows && cRows[0]) ? cRows[0].total : 0;
+      const totalApplications = (aRows && aRows[0]) ? aRows[0].total : 0;
 
       // 2. Categories with job count
       const categories = await query(`

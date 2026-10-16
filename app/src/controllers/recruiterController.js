@@ -23,12 +23,13 @@ const recruiterController = {
       `, [company.id]);
 
       // Total applicants across all jobs
-      const [[{ totalApplicants }]] = await query(`
+      const applicantRows = await query(`
         SELECT COUNT(a.id) as totalApplicants
         FROM applications a
         JOIN jobs j ON a.job_id = j.id
         WHERE j.company_id = ?
       `, [company.id]);
+      const totalApplicants = (applicantRows && applicantRows[0]) ? applicantRows[0].totalApplicants : 0;
 
       res.render('recruiter/dashboard', {
         title: 'Quản lý tuyển dụng - ' + company.name,

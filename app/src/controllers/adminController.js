@@ -3,12 +3,19 @@ const { query } = require('../config/database');
 const adminController = {
   getDashboard: async (req, res) => {
     try {
-      const [[{ userCount }]] = await query('SELECT COUNT(*) as userCount FROM users');
-      const [[{ candidateCount }]] = await query("SELECT COUNT(*) as candidateCount FROM users WHERE role = 'candidate'");
-      const [[{ recruiterCount }]] = await query("SELECT COUNT(*) as recruiterCount FROM users WHERE role = 'recruiter'");
-      const [[{ jobCount }]] = await query('SELECT COUNT(*) as jobCount FROM jobs');
-      const [[{ pendingJobCount }]] = await query("SELECT COUNT(*) as pendingJobCount FROM jobs WHERE status = 'pending'");
-      const [[{ applicationCount }]] = await query('SELECT COUNT(*) as applicationCount FROM applications');
+      const [u] = await query('SELECT COUNT(*) as count FROM users');
+      const [c] = await query("SELECT COUNT(*) as count FROM users WHERE role = 'candidate'");
+      const [r] = await query("SELECT COUNT(*) as count FROM users WHERE role = 'recruiter'");
+      const [j] = await query('SELECT COUNT(*) as count FROM jobs');
+      const [pj] = await query("SELECT COUNT(*) as count FROM jobs WHERE status = 'pending'");
+      const [a] = await query('SELECT COUNT(*) as count FROM applications');
+
+      const userCount = u ? u.count : 0;
+      const candidateCount = c ? c.count : 0;
+      const recruiterCount = r ? r.count : 0;
+      const jobCount = j ? j.count : 0;
+      const pendingJobCount = pj ? pj.count : 0;
+      const applicationCount = a ? a.count : 0;
 
       const recentUsers = await query('SELECT id, role, full_name, email, status, created_at FROM users ORDER BY created_at DESC LIMIT 5');
       const pendingJobs = await query(`
