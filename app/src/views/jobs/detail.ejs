@@ -1,0 +1,220 @@
+<%- include('../partials/header') %>
+
+<div class="bg-light py-4 border-bottom mb-4">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Trang chủ</a></li>
+        <li class="breadcrumb-item"><a href="/jobs" class="text-decoration-none">Việc làm</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= job.title %></li>
+      </ol>
+    </nav>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+      <div>
+        <h1 class="h2 fw-bold text-dark mb-1"><%= job.title %></h1>
+        <div class="d-flex align-items-center gap-2 text-muted">
+          <i class="bi bi-building text-primary"></i>
+          <span class="fw-semibold text-dark"><%= job.company_name %></span>
+          <span>&bull;</span>
+          <span class="badge bg-primary-subtle text-primary"><%= job.category_name %></span>
+          <span class="badge bg-success-subtle text-success"><%= job.job_type %></span>
+        </div>
+      </div>
+
+      <div>
+        <% if (hasApplied) { %>
+          <button class="btn btn-success btn-lg disabled">
+            <i class="bi bi-check2-circle me-1"></i> Đã nộp hồ sơ ứng tuyển
+          </button>
+        <% } else { %>
+          <button class="btn btn-primary btn-lg shadow-sm" data-bs-toggle="modal" data-bs-target="#applyModal">
+            <i class="bi bi-send-fill me-1"></i> Ứng tuyển ngay
+          </button>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row g-4">
+    <!-- Left Column: Details -->
+    <div class="col-lg-8">
+      <!-- Quick Info Bar -->
+      <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+        <div class="row text-center g-2">
+          <div class="col-4 border-end">
+            <div class="text-muted small">Mức lương</div>
+            <div class="fw-bold text-success"><%= job.salary_range %></div>
+          </div>
+          <div class="col-4 border-end">
+            <div class="text-muted small">Địa điểm</div>
+            <div class="fw-bold text-dark"><%= job.location %></div>
+          </div>
+          <div class="col-4">
+            <div class="text-muted small">Hạn nộp hồ sơ</div>
+            <div class="fw-bold text-danger"><%= new Date(job.deadline).toLocaleDateString('vi-VN') %></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Job Description -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+        <h4 class="fw-bold mb-3 border-bottom pb-2">Mô tả công việc</h4>
+        <div class="text-secondary lh-lg mb-4" style="white-space: pre-line;"><%= job.description %></div>
+
+        <h4 class="fw-bold mb-3 border-bottom pb-2">Yêu cầu ứng viên</h4>
+        <div class="text-secondary lh-lg mb-4" style="white-space: pre-line;"><%= job.requirements %></div>
+
+        <% if (job.benefits) { %>
+          <h4 class="fw-bold mb-3 border-bottom pb-2">Quyền lợi & Chế độ đãi ngộ</h4>
+          <div class="text-secondary lh-lg" style="white-space: pre-line;"><%= job.benefits %></div>
+        <% } %>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-white">
+        <h5 class="fw-bold mb-2">Bạn thấy công việc này phù hợp với mình?</h5>
+        <p class="text-muted mb-3">Đừng bỏ lỡ cơ hội gia nhập đội ngũ chuyên nghiệp tại <%= job.company_name %></p>
+        <div>
+          <% if (hasApplied) { %>
+            <button class="btn btn-success btn-lg disabled px-5">
+              <i class="bi bi-check2-circle me-1"></i> Bạn đã ứng tuyển vị trí này
+            </button>
+          <% } else { %>
+            <button class="btn btn-primary btn-lg px-5" data-bs-toggle="modal" data-bs-target="#applyModal">
+              <i class="bi bi-send-fill me-1"></i> Ứng tuyển ngay bây giờ
+            </button>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Company Info & Related -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white sticky-top" style="top: 90px;">
+        <h5 class="fw-bold mb-3 border-bottom pb-2">Thông tin nhà tuyển dụng</h5>
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <div class="bg-light p-3 rounded-3 text-center">
+            <i class="bi bi-building fs-2 text-primary"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold mb-1"><%= job.company_name %></h6>
+            <div class="badge bg-secondary-subtle text-secondary"><%= job.company_scale %></div>
+          </div>
+        </div>
+
+        <ul class="list-unstyled small text-secondary lh-lg mb-3">
+          <li><i class="bi bi-geo-alt text-danger me-2"></i><strong>Địa chỉ:</strong> <%= job.company_address %></li>
+          <% if (job.company_website) { %>
+            <li><i class="bi bi-globe text-primary me-2"></i><strong>Website:</strong> <a href="<%= job.company_website %>" target="_blank" class="text-decoration-none"><%= job.company_website %></a></li>
+          <% } %>
+        </ul>
+
+        <% if (job.company_description) { %>
+          <div class="p-3 bg-light rounded-3 small text-muted mb-3">
+            <%= job.company_description %>
+          </div>
+        <% } %>
+
+        <!-- Related Jobs -->
+        <% if (relatedJobs && relatedJobs.length > 0) { %>
+          <h6 class="fw-bold mt-4 mb-3 border-top pt-3">Việc làm tương tự</h6>
+          <div class="d-flex flex-column gap-3">
+            <% relatedJobs.forEach(rel => { %>
+              <div class="border-bottom pb-2">
+                <a href="/jobs/<%= rel.id %>" class="fw-semibold text-dark text-decoration-none hover-primary d-block">
+                  <%= rel.title %>
+                </a>
+                <div class="text-muted small"><%= rel.company_name %> &bull; <span class="text-success"><%= rel.salary_range %></span></div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ứng Tuyển -->
+<div class="modal fade" id="applyModal" tabindex="-1" aria-labelledby="applyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg rounded-4">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="applyModalLabel">
+          Ứng tuyển: <%= job.title %>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <% if (typeof user === 'undefined' || !user) { %>
+        <div class="modal-body p-4 text-center">
+          <i class="bi bi-box-arrow-in-right display-4 text-primary mb-3"></i>
+          <h5>Vui lòng đăng nhập để ứng tuyển</h5>
+          <p class="text-muted mb-4">Bạn cần tài khoản Ứng viên để tải lên CV và gửi hồ sơ cho nhà tuyển dụng.</p>
+          <div class="d-flex justify-content-center gap-2">
+            <a href="/auth/login" class="btn btn-primary px-4">Đăng nhập ngay</a>
+            <a href="/auth/register" class="btn btn-outline-secondary px-4">Đăng ký mới</a>
+          </div>
+        </div>
+      <% } else if (user.role !== 'candidate') { %>
+        <div class="modal-body p-4 text-center">
+          <i class="bi bi-shield-exclamation display-4 text-warning mb-3"></i>
+          <h5>Chỉ tài khoản Ứng viên mới có thể nộp đơn</h5>
+          <p class="text-muted">Bạn đang đăng nhập bằng tài khoản <%= user.role.toUpperCase() %>. Vui lòng đăng nhập bằng tài khoản Ứng viên để ứng tuyển.</p>
+        </div>
+      <% } else { %>
+        <form action="/jobs/<%= job.id %>/apply" method="POST" enctype="multipart/form-data">
+          <div class="modal-body p-4">
+            <div class="alert alert-info py-2 small mb-3">
+              <i class="bi bi-info-circle me-1"></i> Hồ sơ của bạn sẽ được chuyển trực tiếp tới HR của <strong><%= job.company_name %></strong>.
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Ứng viên:</label>
+              <input type="text" class="form-control bg-light" value="<%= user.full_name %> (<%= user.email %>)" readonly>
+            </div>
+
+            <% if (candidateProfile && candidateProfile.cv_file) { %>
+              <div class="mb-3 p-3 bg-light rounded-3 border">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="cv_choice" id="existingCv" value="existing" checked>
+                  <label class="form-check-label fw-semibold" for="existingCv">
+                    Sử dụng CV hiện tại trong hồ sơ
+                  </label>
+                </div>
+                <div class="small text-muted ms-4 mt-1">
+                  <i class="bi bi-file-earmark-pdf text-danger me-1"></i> <a href="<%= candidateProfile.cv_file %>" target="_blank" class="text-decoration-none">Xem tệp CV đã tải lên</a>
+                </div>
+                <div class="form-check mt-3">
+                  <input class="form-check-input" type="radio" name="cv_choice" id="uploadNewCv" value="new">
+                  <label class="form-check-label fw-semibold" for="uploadNewCv">
+                    Hoặc tải lên tệp CV mới (PDF, DOC, DOCX - Tối đa 5MB)
+                  </label>
+                </div>
+                <input type="file" name="cv" id="cvFileInput" class="form-control form-control-sm mt-2 ms-4" style="width: 90%;" accept=".pdf,.doc,.docx">
+              </div>
+            <% } else { %>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Tải lên tệp CV của bạn <span class="text-danger">*</span></label>
+                <input type="file" name="cv" class="form-control" accept=".pdf,.doc,.docx" required>
+                <div class="form-text small">Chấp nhận tệp .pdf, .doc, .docx. Dung lượng tối đa 5MB.</div>
+              </div>
+            <% } %>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Thư giới thiệu / Lời nhắn tới nhà tuyển dụng</label>
+              <textarea name="cover_letter" class="form-control" rows="4" placeholder="Nêu bật lý do bạn phù hợp với vị trí này..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0 pt-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <button type="submit" class="btn btn-primary px-4">Gửi hồ sơ ứng tuyển</button>
+          </div>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

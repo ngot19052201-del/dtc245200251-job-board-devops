@@ -1,0 +1,79 @@
+<%- include('../partials/header') %>
+
+<div class="bg-primary text-white py-4 mb-4">
+  <div class="container">
+    <h1 class="h3 fw-bold mb-1">Lịch Sử Ứng Tuyển Việc Làm</h1>
+    <p class="mb-0 text-light opacity-90">Theo dõi tiến độ xét duyệt hồ sơ ứng tuyển của bạn từ các nhà tuyển dụng</p>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <% if (applications.length === 0) { %>
+      <div class="text-center py-5">
+        <i class="bi bi-inbox display-3 text-muted mb-3"></i>
+        <h4>Bạn chưa nộp hồ sơ ứng tuyển nào</h4>
+        <p class="text-muted">Khám phá hàng trăm cơ hội việc làm hấp dẫn đang chờ bạn!</p>
+        <a href="/jobs" class="btn btn-primary mt-2">
+          <i class="bi bi-search me-1"></i> Tìm việc làm ngay
+        </a>
+      </div>
+    <% } else { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Vị trí ứng tuyển</th>
+              <th scope="col">Công ty</th>
+              <th scope="col">Mức lương</th>
+              <th scope="col">Ngày nộp</th>
+              <th scope="col">Tệp CV đã gửi</th>
+              <th scope="col" class="text-center">Trạng thái xét duyệt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% applications.forEach(app => { %>
+              <tr>
+                <td>
+                  <a href="/jobs/<%= app.job_id %>" class="fw-bold text-dark text-decoration-none hover-primary">
+                    <%= app.job_title %>
+                  </a>
+                  <div class="small text-muted"><%= app.location %> &bull; <%= app.job_type %></div>
+                </td>
+                <td class="fw-medium"><%= app.company_name %></td>
+                <td class="text-success fw-semibold"><%= app.salary_range %></td>
+                <td class="text-muted small"><%= new Date(app.created_at).toLocaleDateString('vi-VN') %></td>
+                <td>
+                  <a href="<%= app.cv_file %>" target="_blank" class="btn btn-sm btn-outline-danger">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Xem CV
+                  </a>
+                </td>
+                <td class="text-center">
+                  <% if (app.status === 'submitted') { %>
+                    <span class="badge bg-secondary-subtle text-secondary border px-3 py-2">
+                      <i class="bi bi-clock me-1"></i> Đã nộp hồ sơ
+                    </span>
+                  <% } else if (app.status === 'reviewing') { %>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2">
+                      <i class="bi bi-eye me-1"></i> Đang xét duyệt
+                    </span>
+                  <% } else if (app.status === 'accepted') { %>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                      <i class="bi bi-check-circle-fill me-1"></i> Đã trúng tuyển / Mời PV
+                    </span>
+                  <% } else if (app.status === 'rejected') { %>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+                      <i class="bi bi-x-circle me-1"></i> Chưa phù hợp
+                    </span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

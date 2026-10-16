@@ -1,0 +1,128 @@
+<%- include('../partials/header') %>
+
+<div class="bg-dark text-white py-4 mb-4">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h1 class="h3 fw-bold mb-1"><i class="bi bi-shield-lock-fill text-danger me-2"></i> Bảng Quản Trị Hệ Thống (Admin)</h1>
+      <p class="mb-0 text-secondary">Giám sát tổng quan tài nguyên người dùng và tin tuyển dụng</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/admin/users" class="btn btn-outline-light btn-sm"><i class="bi bi-people me-1"></i> Quản lý User</a>
+      <a href="/admin/jobs" class="btn btn-primary btn-sm"><i class="bi bi-check2-circle me-1"></i> Duyệt tin</a>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-2 col-6">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-primary"><%= stats.userCount %></div>
+        <div class="text-muted small fw-medium">Tổng Users</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-success"><%= stats.candidateCount %></div>
+        <div class="text-muted small fw-medium">Ứng viên</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-info"><%= stats.recruiterCount %></div>
+        <div class="text-muted small fw-medium">Nhà tuyển dụng</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-dark"><%= stats.jobCount %></div>
+        <div class="text-muted small fw-medium">Tin tuyển dụng</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-warning"><%= stats.pendingJobCount %></div>
+        <div class="text-muted small fw-medium">Tin chờ duyệt</div>
+      </div>
+    </div>
+    <div class="col-md-2 col-6">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-danger"><%= stats.applicationCount %></div>
+        <div class="text-muted small fw-medium">Lượt ứng tuyển</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- Pending Jobs -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0 text-warning"><i class="bi bi-clock-history me-1"></i> Tin Chờ Kiểm Duyệt (<%= stats.pendingJobCount %>)</h5>
+          <a href="/admin/jobs?status=pending" class="btn btn-sm btn-outline-secondary">Xem tất cả</a>
+        </div>
+
+        <% if (pendingJobs.length === 0) { %>
+          <div class="text-muted text-center py-4">
+            <i class="bi bi-check-circle display-4 text-success d-block mb-2"></i>
+            Tất cả tin tuyển dụng đều đã được kiểm duyệt!
+          </div>
+        <% } else { %>
+          <div class="list-group list-group-flush">
+            <% pendingJobs.forEach(job => { %>
+              <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-semibold text-dark"><%= job.title %></div>
+                  <div class="small text-muted"><%= job.company_name %> &bull; <%= job.category_name %></div>
+                </div>
+                <div class="d-flex gap-1">
+                  <form action="/admin/jobs/approve" method="POST" class="d-inline">
+                    <input type="hidden" name="job_id" value="<%= job.id %>">
+                    <input type="hidden" name="action" value="approved">
+                    <button type="submit" class="btn btn-sm btn-success" title="Duyệt"><i class="bi bi-check-lg"></i></button>
+                  </form>
+                  <form action="/admin/jobs/approve" method="POST" class="d-inline">
+                    <input type="hidden" name="job_id" value="<%= job.id %>">
+                    <input type="hidden" name="action" value="rejected">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Từ chối"><i class="bi bi-x-lg"></i></button>
+                  </form>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0 text-primary"><i class="bi bi-people me-1"></i> Người Dùng Đăng Ký Gần Đây</h5>
+          <a href="/admin/users" class="btn btn-sm btn-outline-secondary">Quản lý</a>
+        </div>
+
+        <div class="list-group list-group-flush">
+          <% recentUsers.forEach(u => { %>
+            <div class="list-group-item px-0 py-3 d-flex justify-content-between align-items-center">
+              <div>
+                <div class="fw-semibold text-dark"><%= u.full_name %></div>
+                <div class="small text-muted"><%= u.email %> &bull; <span class="badge bg-secondary-subtle text-secondary text-uppercase"><%= u.role %></span></div>
+              </div>
+              <div>
+                <% if (u.status === 'active') { %>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle">Hoạt động</span>
+                <% } else { %>
+                  <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Bị khóa</span>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

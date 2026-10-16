@@ -1,0 +1,101 @@
+<%- include('../partials/header') %>
+
+<div class="bg-primary text-white py-4 mb-4">
+  <div class="container">
+    <h1 class="h3 fw-bold mb-1">Hồ Sơ Cá Nhân & Quản Lý CV</h1>
+    <p class="mb-0 text-light opacity-90">Cập nhật đầy đủ thông tin để thu hút các nhà tuyển dụng hàng đầu</p>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <div class="row g-4 justify-content-center">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+        <form action="/candidate/profile" method="POST" enctype="multipart/form-data">
+          
+          <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-lines-fill me-2"></i> Thông Tin Cơ Bản</h5>
+          
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Họ và tên</label>
+              <input type="text" name="full_name" class="form-control" value="<%= userInfo.full_name || '' %>" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Số điện thoại</label>
+              <input type="tel" name="phone" class="form-control" value="<%= userInfo.phone || '' %>" placeholder="09xxxxxxxx">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Email tài khoản</label>
+            <input type="email" class="form-control bg-light" value="<%= userInfo.email || '' %>" readonly>
+            <div class="form-text small">Địa chỉ email liên kết không thể thay đổi trực tiếp.</div>
+          </div>
+
+          <h5 class="fw-bold text-primary mb-3 border-top pt-4"><i class="bi bi-briefcase me-2"></i> Thông Tin Chuyên Môn</h5>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Chức danh / Định hướng nghề nghiệp</label>
+            <input type="text" name="title" class="form-control" value="<%= profile.title || '' %>" placeholder="Ví dụ: DevOps Engineer / Kỹ sư Phần mềm">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Kỹ năng chuyên môn (cách nhau bởi dấu phẩy)</label>
+            <input type="text" name="skills" class="form-control" value="<%= profile.skills || '' %>" placeholder="Docker, Node.js, Linux, MySQL, Nginx...">
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Kinh nghiệm làm việc</label>
+              <input type="text" name="experience" class="form-control" value="<%= profile.experience || '' %>" placeholder="Ví dụ: 1 năm kinh nghiệm / Sinh viên mới tốt nghiệp">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Trình độ học vấn</label>
+              <input type="text" name="education" class="form-control" value="<%= profile.education || '' %>" placeholder="Ví dụ: ĐH CNTT và Truyền thông - ĐH Thái Nguyên">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Giới thiệu bản thân (Bio)</label>
+            <textarea name="bio" class="form-control" rows="3" placeholder="Giới thiệu đôi nét về đam mê, thế mạnh và mục tiêu nghề nghiệp của bạn..."><%= profile.bio || '' %></textarea>
+          </div>
+
+          <h5 class="fw-bold text-primary mb-3 border-top pt-4"><i class="bi bi-file-earmark-pdf me-2"></i> Tệp Hồ Sơ Đính Kèm (CV)</h5>
+
+          <div class="mb-4 p-3 bg-light rounded-3 border">
+            <% if (profile.cv_file) { %>
+              <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-file-earmark-pdf-fill text-danger fs-3"></i>
+                  <div>
+                    <div class="fw-semibold text-dark">CV hiện tại đã tải lên</div>
+                    <div class="small text-muted"><%= profile.cv_file.split('/').pop() %></div>
+                  </div>
+                </div>
+                <a href="<%= profile.cv_file %>" target="_blank" class="btn btn-sm btn-outline-primary">
+                  <i class="bi bi-eye me-1"></i> Xem tệp CV
+                </a>
+              </div>
+            <% } else { %>
+              <div class="text-muted small mb-2"><i class="bi bi-info-circle me-1"></i> Bạn chưa tải lên tệp CV nào.</div>
+            <% } %>
+
+            <label class="form-label fw-semibold small">Tải lên hoặc thay thế CV mới:</label>
+            <input type="file" name="cv" class="form-control" accept=".pdf,.doc,.docx">
+            <div class="form-text small">Chỉ chấp nhận tệp định dạng .pdf, .doc, .docx. Dung lượng tối đa: 5MB.</div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <a href="/" class="btn btn-outline-secondary">Hủy bỏ</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold">
+              <i class="bi bi-floppy me-1"></i> Lưu Cập Nhật Hồ Sơ
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

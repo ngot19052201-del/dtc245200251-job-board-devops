@@ -1,0 +1,115 @@
+<%- include('../partials/header') %>
+
+<div class="bg-primary text-white py-4 mb-4">
+  <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+      <h1 class="h3 fw-bold mb-1">Bảng Điều Khiển Tuyển Dụng</h1>
+      <p class="mb-0 text-light opacity-90"><%= company.name %> &bull; <%= company.scale %></p>
+    </div>
+    <div>
+      <a href="/recruiter/post-job" class="btn btn-light text-primary fw-bold">
+        <i class="bi bi-plus-circle-fill me-1"></i> Đăng tin tuyển dụng mới
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container pb-5">
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-primary"><%= stats.totalJobs %></div>
+        <div class="text-muted small fw-medium">Tổng tin tuyển dụng</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-success"><%= stats.activeJobs %></div>
+        <div class="text-muted small fw-medium">Tin đang tuyển dụng</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 bg-white text-center">
+        <div class="stat-number text-info"><%= stats.totalApplicants %></div>
+        <div class="text-muted small fw-medium">Tổng hồ sơ ứng tuyển đã nhận</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Posts List -->
+  <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-bold mb-0">Danh Sách Tin Tuyển Dụng Của Doanh Nghiệp</h5>
+      <a href="/recruiter/applicants" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-people me-1"></i> Xem tất cả ứng viên (<%= stats.totalApplicants %>)
+      </a>
+    </div>
+
+    <% if (jobs.length === 0) { %>
+      <div class="text-center py-5">
+        <i class="bi bi-file-earmark-plus display-3 text-muted mb-3"></i>
+        <h5>Doanh nghiệp chưa có tin tuyển dụng nào</h5>
+        <p class="text-muted">Hãy đăng tin ngay để tìm kiếm những ứng viên tài năng!</p>
+        <a href="/recruiter/post-job" class="btn btn-primary">Đăng tin đầu tiên</a>
+      </div>
+    <% } else { %>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Tiêu đề tin</th>
+              <th scope="col">Ngành nghề</th>
+              <th scope="col">Hạn nộp</th>
+              <th scope="col" class="text-center">Số ứng viên</th>
+              <th scope="col" class="text-center">Trạng thái tin</th>
+              <th scope="col" class="text-end">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% jobs.forEach(job => { %>
+              <tr>
+                <td>
+                  <a href="/jobs/<%= job.id %>" target="_blank" class="fw-bold text-dark text-decoration-none hover-primary">
+                    <%= job.title %>
+                  </a>
+                  <div class="small text-muted"><%= job.location %> &bull; <span class="text-success"><%= job.salary_range %></span></div>
+                </td>
+                <td><span class="badge bg-light text-dark border"><%= job.category_name %></span></td>
+                <td class="text-muted small"><%= new Date(job.deadline).toLocaleDateString('vi-VN') %></td>
+                <td class="text-center">
+                  <a href="/recruiter/applicants?job_id=<%= job.id %>" class="badge bg-primary text-white text-decoration-none px-3 py-2">
+                    <i class="bi bi-person-check me-1"></i> <%= job.applicant_count %> ứng viên
+                  </a>
+                </td>
+                <td class="text-center">
+                  <% if (job.status === 'approved') { %>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Đang mở tuyển</span>
+                  <% } else if (job.status === 'pending') { %>
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Chờ duyệt</span>
+                  <% } else if (job.status === 'closed') { %>
+                    <span class="badge bg-secondary-subtle text-secondary border">Đã đóng</span>
+                  <% } else { %>
+                    <span class="badge bg-danger-subtle text-danger border">Bị từ chối</span>
+                  <% } %>
+                </td>
+                <td class="text-end">
+                  <div class="btn-group btn-group-sm">
+                    <a href="/recruiter/edit-job/<%= job.id %>" class="btn btn-outline-secondary" title="Sửa tin">
+                      <i class="bi bi-pencil"></i> Sửa
+                    </a>
+                    <a href="/recruiter/applicants?job_id=<%= job.id %>" class="btn btn-outline-primary" title="Xem hồ sơ">
+                      <i class="bi bi-eye"></i> Hồ sơ
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

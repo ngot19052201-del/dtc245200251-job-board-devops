@@ -1,0 +1,97 @@
+<%- include('../partials/header') %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+      <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 bg-white">
+        <div class="text-center mb-4">
+          <div class="bg-primary-subtle text-primary rounded-circle d-inline-flex p-3 mb-2">
+            <i class="bi bi-person-plus-fill fs-2"></i>
+          </div>
+          <h2 class="fw-bold">Đăng Ký Tài Khoản</h2>
+          <p class="text-muted small">Tạo tài khoản để bắt đầu trải nghiệm hệ thống JobBoard</p>
+        </div>
+
+        <form action="/auth/register" method="POST">
+          <!-- Role selector -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Bạn tham gia với tư cách:</label>
+            <div class="row g-2">
+              <div class="col-6">
+                <input type="radio" class="btn-check" name="role" id="roleCandidate" value="candidate" checked autocomplete="off" onchange="toggleCompanyFields()">
+                <label class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center gap-1" for="roleCandidate">
+                  <i class="bi bi-person-check fs-4"></i>
+                  <span>Ứng viên tìm việc</span>
+                </label>
+              </div>
+              <div class="col-6">
+                <input type="radio" class="btn-check" name="role" id="roleRecruiter" value="recruiter" autocomplete="off" onchange="toggleCompanyFields()">
+                <label class="btn btn-outline-primary w-100 py-2 d-flex flex-column align-items-center gap-1" for="roleRecruiter">
+                  <i class="bi bi-building-check fs-4"></i>
+                  <span>Nhà tuyển dụng</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+            <input type="text" name="full_name" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Địa chỉ Email <span class="text-danger">*</span></label>
+            <input type="email" name="email" class="form-control" placeholder="name@company.com" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Số điện thoại</label>
+            <input type="tel" name="phone" class="form-control" placeholder="09xxxxxxxx">
+          </div>
+
+          <!-- Company info fields (hidden unless recruiter is selected) -->
+          <div id="companyFields" style="display: none;" class="p-3 bg-light rounded-3 mb-3 border">
+            <h6 class="fw-bold text-primary mb-2"><i class="bi bi-building me-1"></i> Thông tin Công ty Tuyển dụng</h6>
+            <div class="mb-2">
+              <label class="form-label small fw-semibold">Tên doanh nghiệp / Công ty</label>
+              <input type="text" name="company_name" class="form-control" placeholder="Tập đoàn Công nghệ ABC">
+            </div>
+            <div>
+              <label class="form-label small fw-semibold">Địa chỉ trụ sở</label>
+              <input type="text" name="company_address" class="form-control" placeholder="Hà Nội, Thái Nguyên...">
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
+              <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+              <input type="password" name="confirm_password" class="form-control" placeholder="••••••••" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mb-3">
+            <i class="bi bi-check2-circle me-1"></i> Hoàn Tất Đăng Ký
+          </button>
+        </form>
+
+        <div class="text-center mt-3 pt-2 border-top">
+          <p class="text-muted small mb-0">Đã có tài khoản? <a href="/auth/login" class="fw-semibold text-primary text-decoration-none">Đăng nhập</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function toggleCompanyFields() {
+  const isRecruiter = document.getElementById('roleRecruiter').checked;
+  const companyFields = document.getElementById('companyFields');
+  companyFields.style.display = isRecruiter ? 'block' : 'none';
+}
+</script>
+
+<%- include('../partials/footer') %>
