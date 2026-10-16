@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1025" width="100%" height="100%" style="background-color: #ffffff; font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#222222"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="600" y="38" text-anchor="middle" font-size="21" font-weight="bold" fill="#000000">Sơ đồ kiến trúc hệ thống Website Tuyển dụng (Job Board DevOps)</text>
+
+  <!-- Actor: Người dùng -->
+  <g transform="translate(875, 50)">
+    <circle cx="0" cy="30" r="12" fill="#ffffff" stroke="#222222" stroke-width="1.8"/>
+    <line x1="0" y1="42" x2="0" y2="82" stroke="#222222" stroke-width="1.8"/>
+    <line x1="-21" y1="60" x2="21" y2="60" stroke="#222222" stroke-width="1.8"/>
+    <line x1="0" y1="82" x2="-16" y2="108" stroke="#222222" stroke-width="1.8"/>
+    <line x1="0" y1="82" x2="16" y2="108" stroke="#222222" stroke-width="1.8"/>
+    <text x="0" y="124" text-anchor="middle" font-size="15" fill="#000000">Người dùng</text>
+  </g>
+
+  <!-- Arrow HTTPS -->
+  <line x1="875" y1="180" x2="875" y2="318" stroke="#222222" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="886" y="225" font-size="14" fill="#000000">HTTPS</text>
+
+  <!-- Outer Box: Docker Compose -->
+  <rect x="60" y="265" width="1080" height="665" rx="6" fill="#ffffff" stroke="#222222" stroke-width="1.8"/>
+  <text x="600" y="284" text-anchor="middle" font-size="17" font-weight="bold" fill="#000000">Docker Compose (máy chủ Ubuntu)</text>
+
+  <!-- Left Container: Giám sát và log tập trung -->
+  <rect x="90" y="310" width="540" height="590" rx="4" fill="#ffffff" stroke="#333333" stroke-width="1.8"/>
+  <text x="360" y="332" text-anchor="middle" font-size="17" font-weight="bold" fill="#000000">Giám sát và log tập trung</text>
+
+  <!-- Grafana -->
+  <g id="comp-grafana">
+    <rect x="450" y="365" width="135" height="65" fill="#fafafa" stroke="#333333" stroke-width="1.6"/>
+    <rect x="563" y="371" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="561" y="373" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="561" y="377" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="517" y="405" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">Grafana</text>
+  </g>
+
+  <!-- Loki -->
+  <g id="comp-loki">
+    <rect x="220" y="560" width="120" height="60" fill="#fafafa" stroke="#333333" stroke-width="1.6"/>
+    <rect x="323" y="566" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="321" y="568" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="321" y="572" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="280" y="597" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">Loki</text>
+  </g>
+
+  <!-- Prometheus -->
+  <g id="comp-prometheus">
+    <rect x="430" y="560" width="170" height="60" fill="#fafafa" stroke="#333333" stroke-width="1.6"/>
+    <rect x="583" y="566" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="581" y="568" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="581" y="572" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="515" y="597" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">Prometheus</text>
+  </g>
+
+  <!-- Promtail -->
+  <g id="comp-promtail">
+    <rect x="110" y="760" width="215" height="80" fill="#fafafa" stroke="#333333" stroke-width="1.6"/>
+    <rect x="308" y="766" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="306" y="768" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="306" y="772" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="125" y="792" font-size="15" font-weight="bold" fill="#000000">Promtail</text>
+    <text x="125" y="818" font-size="13" fill="#333333">(đọc log container)</text>
+  </g>
+
+  <!-- Exporters -->
+  <g id="comp-exporters">
+    <rect x="400" y="760" width="220" height="80" fill="#fafafa" stroke="#333333" stroke-width="1.6"/>
+    <rect x="603" y="766" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="601" y="768" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="601" y="772" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="415" y="792" font-size="15" font-weight="bold" fill="#000000">Exporters</text>
+    <text x="415" y="818" font-size="13" fill="#333333">(container, web, DB)</text>
+  </g>
+
+  <!-- Arrows in Monitoring Container -->
+  <!-- Grafana -> Loki (log) -->
+  <line x1="450" y1="420" x2="315" y2="560" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="360" y="480" font-size="14" fill="#000000">log</text>
+
+  <!-- Grafana -> Prometheus (metrics) -->
+  <line x1="515" y1="430" x2="515" y2="560" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="523" y="490" font-size="14" fill="#000000">metrics</text>
+
+  <!-- Promtail -> Loki (đẩy log) -->
+  <line x1="245" y1="760" x2="270" y2="620" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="275" y="685" font-size="14" fill="#000000">đẩy log</text>
+
+  <!-- Exporters -> Prometheus (thu metrics) -->
+  <path d="M 470 760 Q 435 685 480 620" fill="none" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="430" y="688" text-anchor="end" font-size="14" fill="#000000">thu metrics</text>
+
+  <!-- Right Section: Reverse Proxy 3D Node -->
+  <g id="node-reverse-proxy">
+    <polygon points="710,330 721,319 1071,319 1060,330" fill="#fafafa" stroke="#222222" stroke-width="1.6"/>
+    <polygon points="1060,330 1071,319 1071,469 1060,480" fill="#f0f2f5" stroke="#222222" stroke-width="1.6"/>
+    <rect x="710" y="330" width="350" height="150" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+    <text x="885" y="348" text-anchor="middle" font-size="17" font-weight="bold" fill="#000000">Reverse Proxy</text>
+
+    <!-- Nginx component -->
+    <rect x="730" y="370" width="310" height="85" fill="#ffffff" stroke="#333333" stroke-width="1.6"/>
+    <rect x="1021" y="376" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="1019" y="378" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="1019" y="382" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="745" y="398" font-size="15" font-weight="bold" fill="#000000">Nginx</text>
+    <text x="745" y="424" font-size="13" fill="#333333">HTTPS + security headers</text>
+  </g>
+
+  <!-- Horizontal Arrow: Nginx -> Grafana (proxy) -->
+  <line x1="730" y1="398" x2="585" y2="398" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <rect x="635" y="383" width="50" height="18" fill="#ffffff"/>
+  <text x="660" y="396" text-anchor="middle" font-size="14" fill="#000000">proxy</text>
+
+  <!-- Right Section: Ứng dụng 3D Node -->
+  <g id="node-ung-dung">
+    <polygon points="710,540 721,529 1121,529 1110,540" fill="#fafafa" stroke="#222222" stroke-width="1.6"/>
+    <polygon points="1110,540 1121,529 1121,669 1110,680" fill="#f0f2f5" stroke="#222222" stroke-width="1.6"/>
+    <rect x="710" y="540" width="400" height="140" fill="#ffffff" stroke="#222222" stroke-width="1.6"/>
+    <text x="910" y="558" text-anchor="middle" font-size="17" font-weight="bold" fill="#000000">Ứng dụng</text>
+
+    <!-- Web Node.js -->
+    <rect x="730" y="580" width="150" height="65" fill="#ffffff" stroke="#333333" stroke-width="1.6"/>
+    <rect x="861" y="586" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="859" y="588" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="859" y="592" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="805" y="618" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">Web Node.js</text>
+
+    <!-- phpMyAdmin -->
+    <rect x="935" y="580" width="150" height="65" fill="#ffffff" stroke="#333333" stroke-width="1.6"/>
+    <rect x="1066" y="586" width="16" height="10" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="1064" y="588" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <rect x="1064" y="592" width="4" height="2" fill="#ffffff" stroke="#333333" stroke-width="1"/>
+    <text x="1010" y="618" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">phpMyAdmin</text>
+  </g>
+
+  <!-- Arrows from Nginx to Ứng dụng -->
+  <!-- Nginx -> Web Node.js (proxy) -->
+  <line x1="830" y1="455" x2="805" y2="580" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="780" y="513" font-size="14" fill="#000000">proxy</text>
+
+  <!-- Nginx -> phpMyAdmin (proxy) -->
+  <line x1="940" y1="455" x2="990" y2="580" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="982" y="513" font-size="14" fill="#000000">proxy</text>
+
+  <!-- Bottom Node: MySQL 3D Cylinder -->
+  <g id="node-mysql">
+    <path d="M 825,771 L 825,829 A 57.5,11 0 0,0 940,829 L 940,771 Z" fill="#fafafa"/>
+    <path d="M 825,829 A 57.5,11 0 0,0 940,829" fill="none" stroke="#222222" stroke-width="1.6"/>
+    <line x1="825" y1="771" x2="825" y2="829" stroke="#222222" stroke-width="1.6"/>
+    <line x1="940" y1="771" x2="940" y2="829" stroke="#222222" stroke-width="1.6"/>
+    <ellipse cx="882.5" cy="771" rx="57.5" ry="11" fill="#fafafa" stroke="#222222" stroke-width="1.6"/>
+    <text x="882.5" y="808" text-anchor="middle" font-size="15" font-weight="bold" fill="#000000">MySQL</text>
+  </g>
+
+  <!-- Arrows from Ứng dụng to MySQL -->
+  <!-- Web Node.js -> MySQL (SQL) -->
+  <line x1="805" y1="645" x2="850" y2="765" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="798" y="710" font-size="14" fill="#000000">SQL</text>
+
+  <!-- phpMyAdmin -> MySQL (SQL) -->
+  <line x1="1010" y1="645" x2="920" y2="765" stroke="#222222" stroke-width="1.6" marker-end="url(#arrow)"/>
+  <text x="982" y="710" font-size="14" fill="#000000">SQL</text>
+
+  <!-- Bottom Caption -->
+  <text x="600" y="980" text-anchor="middle" font-size="17" font-weight="bold" font-family="'Times New Roman', serif" fill="#000000">Hình 1.1: Sơ đồ kiến trúc tổng thể hệ thống</text>
+</svg>
