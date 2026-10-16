@@ -60,15 +60,15 @@ Hệ thống Website Tuyển dụng / Job Board được thiết kế theo nguy�
 - **Vấn đề an ninh:** Nếu tất cả container cùng nằm chung trong một dải mạng phẳng (flat network), một container bị xâm nhập (như Grafana hoặc phpMyAdmin) có thể tự do quét cổng, tấn công leo thang sang cơ sở dữ liệu và các dịch vụ khác (Lateral Movement).
 - **Giải pháp triển khai:**
   + Thiết lập 3 mạng bridge cô lập hoàn toàn:
-    1. `frontend-net`: Chỉ kết nối giữa Nginx và người dùng ngoài.
-    2. `backend-net`: Kết nối Nginx, Node.js Web App, MySQL và phpMyAdmin.
-    3. `monitoring-net`: Kết nối Nginx, Prometheus, Grafana, Loki, Promtail, cAdvisor và Exporter.
+    1. `frontend_net`: Chỉ kết nối giữa Nginx và cổng vào người dùng.
+    2. `backend_net` (`internal: true`): Mạng nội bộ bảo mật cao kết nối Nginx, Node.js Web App, MySQL, phpMyAdmin và mysqld-exporter. Toàn bộ traffic mạng này bị chặn truy cập ra ngoài internet.
+    3. `monitoring_net`: Kết nối Nginx, Prometheus, Grafana, Loki, Promtail, cAdvisor và các Exporter.
   + phpMyAdmin và người dùng ngoài không thể truy cập trực tiếp vào dải mạng monitoring hoặc dải mạng hệ điều hành.
 - **Cách kiểm chứng:**
   ```bash
-  docker network inspect jobboard-frontend-net
-  docker network inspect jobboard-backend-net
-  docker network inspect jobboard-monitoring-net
+  docker network inspect frontend_net
+  docker network inspect backend_net
+  docker network inspect monitoring_net
   ```
 
 ---
@@ -76,7 +76,7 @@ Hệ thống Website Tuyển dụng / Job Board được thiết kế theo nguy�
 ### Biện pháp 3: Cách Ly Hoàn Toàn Cổng MySQL (Port 3306 Isolated) & Phân Quyền Non-Root DB
 - **Vấn đề an ninh:** Mở cổng MySQL 3306 ra ngoài Internet khiến cơ sở dữ liệu trở thành mục tiêu tấn công hàng đầu của các cuộc tấn công dò quét cổng (Port Scanning), Brute Force mật khẩu root và khai thác lỗ hổng Zero-day.
 - **Giải pháp triển khai:**
-  + Trong `docker-compose.yml`, dịch vụ `mysql` **tuyệt đối không khai báo directives `ports:`**, cổng 3306 chỉ tồn tại cục bộ trong `backend-net` và `monitoring-net`.
+  + Trong `docker-compose.yml`, dịch vụ `mysql` **chỉ kết nối duy nhất vào `backend_net`** và **tuyệt đối không khai báo directives `ports:`**, cổng 3306 được cô lập hoàn toàn, không mở ra ngoài Host.
   + Ứng dụng web Node.js kết nối qua tài khoản phân quyền hạn chế `jobuser` (chỉ có quyền trên schema `jobboard_db.*`), tuyệt đối không dùng tài khoản `root`.
   + Dịch vụ giám sát `mysqld-exporter` sử dụng tài khoản riêng `exporter` chỉ có quyền đọc metrics (`PROCESS, REPLICATION CLIENT, SELECT`) và bị giới hạn tối đa 3 kết nối đồng thời.
 - **Cách kiểm chứng:**

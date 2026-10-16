@@ -16,9 +16,9 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl:ro
       - nginx-logs:/var/log/nginx
     networks:
-      - frontend-net
-      - backend-net
-      - monitoring-net
+      - frontend_net
+      - backend_net
+      - monitoring_net
     depends_on:
       webapp:
         condition: service_healthy
@@ -44,14 +44,14 @@ services:
     volumes:
       - cv-uploads:/usr/src/app/public/uploads
     networks:
-      - backend-net
-      - monitoring-net
+      - backend_net
+      - monitoring_net
     depends_on:
       mysql:
         condition: service_healthy
 
   # ============================================================================
-  # 3. DATABASE (MYSQL 8.0) - ISOLATED (NO HOST PORT EXPOSED)
+  # 3. DATABASE (MYSQL 8.0) - ISOLATED (NO HOST PORT EXPOSED, ONLY BACKEND_NET)
   # ============================================================================
   mysql:
     image: mysql:8.0
@@ -67,8 +67,7 @@ services:
       - mysql-data:/var/lib/mysql
       - ./mysql-init:/docker-entrypoint-initdb.d:ro
     networks:
-      - backend-net
-      - monitoring-net
+      - backend_net
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "jobuser", "-pJobPass@2026_Secure"]
       interval: 10s
@@ -90,7 +89,7 @@ services:
       PMA_PORT: 3306
       PMA_ARBITRARY: 0
     networks:
-      - backend-net
+      - backend_net
     depends_on:
       mysql:
         condition: service_healthy
@@ -110,10 +109,10 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     networks:
-      - monitoring-net
+      - monitoring_net
 
   # ============================================================================
-  # 6. MYSQL EXPORTER FOR PROMETHEUS
+  # 6. MYSQL EXPORTER FOR PROMETHEUS (BRIDGES BACKEND_NET TO MONITORING_NET)
   # ============================================================================
   mysqld-exporter:
     image: prom/mysqld-exporter:latest
@@ -124,7 +123,8 @@ services:
     volumes:
       - ./monitoring/mysqld-exporter/.my.cnf:/etc/.my.cnf:ro
     networks:
-      - monitoring-net
+      - monitoring_net
+      - backend_net
     depends_on:
       mysql:
         condition: service_healthy
@@ -139,8 +139,8 @@ services:
     command:
       - "-nginx.scrape-uri=http://nginx:80/stub_status"
     networks:
-      - monitoring-net
-      - frontend-net
+      - monitoring_net
+      - frontend_net
     depends_on:
       - nginx
 
@@ -160,7 +160,7 @@ services:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
     networks:
-      - monitoring-net
+      - monitoring_net
     depends_on:
       - cadvisor
       - mysqld-exporter
@@ -182,8 +182,8 @@ services:
       - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana-data:/var/lib/grafana
     networks:
-      - monitoring-net
-      - frontend-net
+      - monitoring_net
+      - frontend_net
     depends_on:
       - prometheus
       - loki
@@ -200,7 +200,7 @@ services:
       - ./monitoring/loki/loki-config.yml:/etc/loki/loki-config.yml:ro
       - loki-data:/loki
     networks:
-      - monitoring-net
+      - monitoring_net
 
   # ============================================================================
   # 10. LOG SHIPPER AGENT (PROMTAIL)
@@ -216,23 +216,24 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     networks:
-      - monitoring-net
+      - monitoring_net
     depends_on:
       - loki
 
 # ==============================================================================
-# THREE ISOLATED BRIDGE NETWORKS
+# THREE ISOLATED NETWORKS (frontend_net, backend_net internal, monitoring_net)
 # ==============================================================================
 networks:
-  frontend-net:
+  frontend_net:
     driver: bridge
-    name: jobboard-frontend-net
-  backend-net:
+    name: frontend_net
+  backend_net:
     driver: bridge
-    name: jobboard-backend-net
-  monitoring-net:
+    name: backend_net
+    internal: true
+  monitoring_net:
     driver: bridge
-    name: jobboard-monitoring-net
+    name: monitoring_net
 
 # ==============================================================================
 # PERSISTENT VOLUMES

@@ -25,9 +25,9 @@ Dự án là nền tảng Cổng Tuyển Dụng và Việc Làm trực tuyến (
 ## 2. KIẾN TRÚC HỆ THỐNG & DOCKER NETWORKS
 
 Toàn bộ hệ thống được cô lập thành **3 dải mạng bridge độc lập**:
-1. `jobboard-frontend-net`: Nginx Reverse Proxy tiếp nhận traffic người dùng bên ngoài qua cổng 80 (HTTP) và 443 (HTTPS).
-2. `jobboard-backend-net`: Mạng kết nối nội bộ giữa Web Application (Node.js Express), Cơ sở dữ liệu MySQL 8.0 và phpMyAdmin.
-3. `jobboard-monitoring-net`: Mạng giám sát kết nối Nginx, Prometheus, Grafana, Loki, Promtail, cAdvisor và mysqld-exporter.
+1. `frontend_net`: Nginx Reverse Proxy tiếp nhận traffic người dùng bên ngoài qua cổng 80 (HTTP) và 443 (HTTPS).
+2. `backend_net` (`internal: true`): Mạng kết nối nội bộ cô lập hoàn toàn giữa Web Application (Node.js Express), Cơ sở dữ liệu MySQL 8.0, phpMyAdmin và mysqld-exporter. Container MySQL chỉ nằm duy nhất trong mạng này và không mở cổng 3306 ra ngoài Host.
+3. `monitoring_net`: Mạng giám sát kết nối Nginx, Prometheus, Grafana, Loki, Promtail, cAdvisor và các Exporter.
 
 ### Danh Sách Cổng Truy Cập (Ports Mapping):
 | Dịch vụ | Cổng trên Host | Giao thức | Mục đích |
