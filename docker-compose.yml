@@ -37,10 +37,10 @@ services:
       - NODE_ENV=production
       - DB_HOST=mysql
       - DB_PORT=3306
-      - DB_NAME=jobboard_db
-      - DB_USER=jobuser
-      - DB_PASSWORD=JobPass@2026_Secure
-      - SESSION_SECRET=super_secret_session_key_jobboard_2026_dtc245200251
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
     volumes:
       - cv-uploads:/usr/src/app/public/uploads
     networks:
@@ -59,17 +59,17 @@ services:
     restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: RootAdmin@2026_Secure_Strong
-      MYSQL_DATABASE: jobboard_db
-      MYSQL_USER: jobuser
-      MYSQL_PASSWORD: JobPass@2026_Secure
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
       - ./mysql-init:/docker-entrypoint-initdb.d:ro
     networks:
       - backend_net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "jobuser", "-pJobPass@2026_Secure"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u$$MYSQL_USER -p$$MYSQL_PASSWORD"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -90,6 +90,7 @@ services:
       PMA_ARBITRARY: 0
     networks:
       - backend_net
+      - frontend_net
     depends_on:
       mysql:
         condition: service_healthy
